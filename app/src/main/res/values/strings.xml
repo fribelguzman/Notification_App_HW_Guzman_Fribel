@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Notification_App_HW_Guzman_Fribel</string>
+    <string name="notification_added_faves">Added to Faves</string>
+    <string name="notification_faves_content_text">Go Back to Home</string>
+    <string name="error_already_added_faves">Emoji already added to Faves</string>
 </resources>
