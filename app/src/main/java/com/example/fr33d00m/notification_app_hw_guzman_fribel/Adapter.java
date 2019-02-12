@@ -10,23 +10,21 @@ import java.util.List;
 
 public class Adapter  extends RecyclerView.Adapter<Holder> {
 
-    List<Notification> notificationList;
+    private List<Notification> notificationList;
 
-    public Adapter(List<Notification> modelList) {
+    Adapter(List<Notification> modelList) {
         this.notificationList = modelList;
     }
     @NonNull
     @Override
     public Holder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_view,viewGroup,false);
-        return new Holder(itemView);
+        //every new variable you create is memory used, only use em if you need em
+        return new Holder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_view, viewGroup, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
-        Notification notification = notificationList.get(position);
-        holder.onBind(notification);
-
+        holder.onBind(notificationList.get(position));
     }
 
     @Override

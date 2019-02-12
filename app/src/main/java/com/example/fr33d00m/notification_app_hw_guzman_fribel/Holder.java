@@ -31,7 +31,7 @@ public class Holder extends RecyclerView.ViewHolder {
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(itemView.getContext(), Second_activity.class);
+                Intent intent = new Intent(itemView.getContext(), SecondActivity.class);
                 intent.putExtra("img", notification.getFunnyPic());
                 intent.putExtra("message", notification.getMessage());
                 itemView.getContext().startActivity(intent);

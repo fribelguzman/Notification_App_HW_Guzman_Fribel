@@ -6,7 +6,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,16 +15,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Second_activity extends AppCompatActivity {
+public class SecondActivity extends AppCompatActivity {
+    //field order should be static final fields, static fields, objects, Strings, primitives
+    private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
+    private static final int NOTIFICATION_ID = 0;
+    private final String NOTIFICATION_CHANNEL_NAME = "Emoji Notification";
+    private final String NOTIFICATION_CHANNEL_DESCRIPTION = "Notification";
+    private NotificationManager mNotifyManager;
+    private SharedPreferences sharedPrefs;
     private ImageView funnyPic3;
     private TextView message3;
     private Button button;
-    private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
-    private static final int NOTIFICATION_ID = 0;
-    private NotificationManager mNotifyManager;
-    String message;
-    private SharedPreferences sharedPrefs;
-
+    private String message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,21 +53,26 @@ public class Second_activity extends AppCompatActivity {
     }
 
     public void setUpView() {
-        int img = (int) getIntent().getExtras().get("img");
-        funnyPic3.setImageResource(img);
-        message = (String) getIntent().getExtras().get("message");
-        message3.setText(message);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (sharedPrefs.contains(message)) {
-                    showToast();
-                } else {
-                    mNotifyManager.notify(NOTIFICATION_ID, getNotificationBuilder(getNotificationIntent()));
-                    sharedPrefs.edit().putBoolean(message, true).commit();
+        //provide a default value, and we know it's gonna be an int so use getInt/getString rather than get, avoid the extra overhead from the casting operation
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            funnyPic3.setImageResource(extras.getInt("img", R.drawable.emoji_whatever));
+            message3.setText(message);
+            message = extras.getString("message", "Error");
+
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (sharedPrefs.contains(message)) {
+                        showToast();
+                    } else {
+                        mNotifyManager.notify(NOTIFICATION_ID, getNotificationBuilder(getNotificationIntent()));
+                        //use apply for asynchronous handling
+                        sharedPrefs.edit().putBoolean(message, true).apply();
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     public void createNotificationChannel() {
@@ -76,23 +82,23 @@ public class Second_activity extends AppCompatActivity {
                 android.os.Build.VERSION_CODES.O) {
 
             NotificationChannel notificationChannel = new NotificationChannel(PRIMARY_CHANNEL_ID,
-                    "Emoji Notification", NotificationManager
+                    NOTIFICATION_CHANNEL_NAME, NotificationManager
                     .IMPORTANCE_HIGH);
-            notificationChannel.setDescription("Notification");
+            notificationChannel.setDescription(NOTIFICATION_CHANNEL_DESCRIPTION);
             mNotifyManager.createNotificationChannel(notificationChannel);
         }
     }
 
     private Notification getNotificationBuilder(PendingIntent intent) {
         NotificationCompat.Builder notifyBuilder = new NotificationCompat.Builder(getApplicationContext(), PRIMARY_CHANNEL_ID)
-                .setContentTitle("Added to Faves")
-                .setContentText("Go Back to Home")
-                .setSmallIcon(R.drawable.face1)
+                .setContentTitle(getString(R.string.notification_added_faves))
+                .setContentText(getString(R.string.notification_faves_content_text))
+                .setSmallIcon(R.drawable.emoji_shocked)
                 .setContentIntent(intent);
         return notifyBuilder.build();
     }
 
     public void showToast() {
-        Toast.makeText(this, "Emoji already added to Faves", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.error_already_added_faves, Toast.LENGTH_SHORT).show();
     }
 }
